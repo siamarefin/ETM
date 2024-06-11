@@ -63,7 +63,7 @@ class ETM(object):
         train_embeddings=False,
         lr=0.005,
         lr_factor=4.0,
-        epochs=15,
+        epochs=200,
         optimizer_type='adam',
         seed=2019,
         enc_drop=0.0,
