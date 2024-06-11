@@ -16,7 +16,10 @@ class Model(nn.Module):
             embeddings=None,
             train_embeddings=True,
             enc_drop=0.5,
-            debug_mode=False):
+            debug_mode=False,
+            additional_hidden_size=None,  # New parameter
+            additional_activation='relu'  # New parameter
+        ):
         super(Model, self).__init__()
 
         # define hyperparameters

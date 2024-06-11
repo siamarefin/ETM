@@ -78,6 +78,8 @@ class ETM(object):
         eval_batch_size=1000,
         eval_perplexity=False,
         debug_mode=False,
+        additional_hidden_size=None,  # New parameter for additional hidden layer size
+        additional_activation='relu'  # New parameter for additional hidden layer activation function
     ):
         self.vocabulary = vocabulary
         self.vocabulary_size = len(self.vocabulary)
@@ -127,7 +129,10 @@ class ETM(object):
             self.embeddings,
             train_embeddings,
             self.enc_drop,
-            self.debug_mode).to(
+            self.debug_mode,
+            additional_hidden_size=self.additional_hidden_size,  # Pass new parameter to Model
+            additional_activation=self.additional_activation  # Pass new parameter to Model
+            ).to(
             self.device)
         self.optimizer = self._get_optimizer(optimizer_type, lr, wdecay)
 
