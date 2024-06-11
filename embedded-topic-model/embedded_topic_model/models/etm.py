@@ -72,7 +72,7 @@ class ETM(object):
         wdecay=1.2e-6,
         anneal_lr=False,
         bow_norm=True,
-        num_words=10,
+        num_words=20,
         log_interval=2,
         visualize_every=10,
         eval_batch_size=1000,
