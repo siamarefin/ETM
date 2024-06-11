@@ -46,6 +46,8 @@ class ETM(object):
         eval_batch_size (int): input batch size for evaluation
         eval_perplexity (bool): whether to compute perplexity on document completion task
         debug_mode (bool): wheter or not should log model operations
+        additional_hidden_size (int): dimension of the additional hidden layer
+        additional_activation (str): activation function for the additional hidden layer
     """
 
     def __init__(
@@ -63,7 +65,7 @@ class ETM(object):
         train_embeddings=False,
         lr=0.005,
         lr_factor=4.0,
-        epochs=200,
+        epochs=15,
         optimizer_type='adam',
         seed=2019,
         enc_drop=0.0,
@@ -72,14 +74,14 @@ class ETM(object):
         wdecay=1.2e-6,
         anneal_lr=False,
         bow_norm=True,
-        num_words=20,
+        num_words=10,
         log_interval=2,
         visualize_every=10,
         eval_batch_size=1000,
         eval_perplexity=False,
         debug_mode=False,
-        additional_hidden_size=None,  # New parameter for additional hidden layer size
-        additional_activation='relu'  # New parameter for additional hidden layer activation function
+        additional_hidden_size=400,
+        additional_activation='relu'
     ):
         self.vocabulary = vocabulary
         self.vocabulary_size = len(self.vocabulary)
@@ -104,6 +106,8 @@ class ETM(object):
         self.eval_batch_size = eval_batch_size
         self.eval_perplexity = eval_perplexity
         self.debug_mode = debug_mode
+        self.additional_hidden_size = additional_hidden_size
+        self.additional_activation = additional_activation
 
         device = 'cpu'
         if torch.cuda.is_available():
@@ -236,8 +240,8 @@ class ETM(object):
         self.test_1_counts = test_data['test1']['counts']
         self.num_docs_test_1 = len(self.test_1_tokens)
         self.test_2_tokens = test_data['test2']['tokens']
-        self.test_2_counts = test_data['test2']['counts']
-        self.num_docs_test_2 = len(self.test_2_tokens)
+        self.test_2_counts = test_data
+
 
     def _train(self, epoch):
         self.model.train()
