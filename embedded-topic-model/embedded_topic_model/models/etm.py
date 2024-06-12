@@ -59,7 +59,7 @@ class ETM(object):
         num_topics=30,                  # Fewer topics for better interpretability; tune based on your data
         rho_size=300,                   # Size of topic embedding
         emb_size=300,                   # Size of word embedding (same as rho_size)
-        t_hidden_size=512,              # Reduced hidden size for better generalization and speed
+        t_hidden_size=1024,              # Reduced hidden size for better generalization and speed
         theta_act='relu',               # ReLU activation function
         train_embeddings=True,          # Fine-tune embeddings for better performance on your specific data
         lr=0.005,                       # Slightly lower learning rate for stable training
