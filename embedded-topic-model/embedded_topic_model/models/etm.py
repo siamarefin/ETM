@@ -52,31 +52,32 @@ class ETM(object):
     def __init__(
         self,
         vocabulary,
-        embeddings=None,
-        use_c_format_w2vec=False,
-        model_path=None,
-        batch_size=1500,
-        num_topics=50,
-        rho_size=300,
-        emb_size=300,
-        t_hidden_size=800,
-        theta_act='relu',
-        train_embeddings=False,
-        lr=0.01,
-        lr_factor=4.0,
-        epochs=20,
-        optimizer_type='adam',
-        seed=2019,
-        enc_drop=0.0,
-        clip=0.0,
-        nonmono=10,
-        wdecay=1.2e-6,
-        anneal_lr=False,
-        bow_norm=True,
-        num_words=10,
-        log_interval=2,
-        visualize_every=10,
-        eval_batch_size=1000,
+        embeddings=None,                # Pre-trained embeddings or None if you want to train from scratch
+        use_c_format_w2vec=False,       # Depending on the format of your word embeddings
+        model_path=None,                # Path to save/load the model if needed
+        batch_size=512,                 # Moderate batch size for balanced memory usage and training speed
+        num_topics=30,                  # Fewer topics for better interpretability; tune based on your data
+        rho_size=300,                   # Size of topic embedding
+        emb_size=300,                   # Size of word embedding (same as rho_size)
+        t_hidden_size=512,              # Reduced hidden size for better generalization and speed
+        theta_act='relu',               # ReLU activation function
+        train_embeddings=True,          # Fine-tune embeddings for better performance on your specific data
+        lr=0.005,                       # Slightly lower learning rate for stable training
+        lr_factor=4.0,                  # Learning rate factor for dynamic adjustment
+        epochs=50,                      # Increased epochs for thorough training
+        optimizer_type='adam',          # Adam optimizer for efficient and adaptive learning
+        seed=42,                        # Different seed for reproducibility
+        enc_drop=0.1,                   # Dropout to prevent overfitting
+        clip=0.0,                       # Gradient clipping value; set if needed to prevent exploding gradients
+        nonmono=10,                     # Non-monotonicity parameter
+        wdecay=1e-6,                    # Weight decay for regularization
+        anneal_lr=True,                 # Enable learning rate annealing for better convergence
+        bow_norm=True,                  # Normalize bag-of-words representation
+        num_words=10,                   # Number of words to display for each topic
+        log_interval=10,                # Frequency of logging training progress
+        visualize_every=20,             # Frequency of visualization updates
+        eval_batch_size=1000,           # Batch size for evaluation
+
         eval_perplexity=False,
         debug_mode=False,
         additional_hidden_size=400,
