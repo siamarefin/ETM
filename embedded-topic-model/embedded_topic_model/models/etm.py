@@ -55,7 +55,7 @@ class ETM(object):
         embeddings=None,
         use_c_format_w2vec=False,
         model_path=None,
-        batch_size=1000,
+        batch_size=1500,
         num_topics=50,
         rho_size=300,
         emb_size=300,
