@@ -62,7 +62,7 @@ class ETM(object):
         t_hidden_size=800,
         theta_act='relu',
         train_embeddings=False,
-        lr=0.001,
+        lr=0.01,
         lr_factor=4.0,
         epochs=20,
         optimizer_type='adam',
