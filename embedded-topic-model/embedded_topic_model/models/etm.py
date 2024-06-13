@@ -64,7 +64,7 @@ class ETM(object):
         train_embeddings=True,          # Fine-tune embeddings for better performance on your specific data
         lr=0.005,                       # Slightly lower learning rate for stable training
         lr_factor=4.0,                  # Learning rate factor for dynamic adjustment
-        epochs=50,                      # Increased epochs for thorough training
+        epochs=100,                     # Increased epochs for thorough training
         optimizer_type='adam',          # Adam optimizer for efficient and adaptive learning
         seed=42,                        # Different seed for reproducibility
         enc_drop=0.1,                   # Dropout to prevent overfitting
