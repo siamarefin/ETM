@@ -77,7 +77,7 @@ class ETM(object):
         log_interval=10,                # Frequency of logging training progress
         visualize_every=20,             # Frequency of visualization updates
         eval_batch_size=1000,           # Batch size for evaluation
-
+        accumulation_steps=2,
         eval_perplexity=False,
         debug_mode=False,
         additional_hidden_size=400,
@@ -108,7 +108,8 @@ class ETM(object):
         self.debug_mode = debug_mode
         self.additional_hidden_size = additional_hidden_size
         self.additional_activation = additional_activation
-
+        self.accumulation_steps = accumulation_steps
+        
         device = 'cpu'
         if torch.cuda.is_available():
             device = 'cuda'
@@ -250,30 +251,35 @@ class ETM(object):
         cnt = 0
         indices = torch.randperm(self.num_docs_train)
         indices = torch.split(indices, self.batch_size)
-        for idx, ind in enumerate(indices):
-            self.optimizer.zero_grad()
-            self.model.zero_grad()
+        self.optimizer.zero_grad()
 
+        for idx, ind in enumerate(indices):
             data_batch = data.get_batch(
                 self.train_tokens,
                 self.train_counts,
                 ind,
                 self.vocabulary_size,
-                self.device)
+                self.device
+            )
             sums = data_batch.sum(1).unsqueeze(1)
             if self.bow_norm:
                 normalized_data_batch = data_batch / sums
             else:
                 normalized_data_batch = data_batch
             recon_loss, kld_theta = self.model(
-                data_batch, normalized_data_batch)
+                data_batch, normalized_data_batch
+            )
             total_loss = recon_loss + kld_theta
+            total_loss = total_loss / self.accumulation_steps  # Scale the loss
             total_loss.backward()
 
-            if self.clip > 0:
-                torch.nn.utils.clip_grad_norm_(
-                    self.model.parameters(), self.clip)
-            self.optimizer.step()
+            if (idx + 1) % self.accumulation_steps == 0:
+                if self.clip > 0:
+                    torch.nn.utils.clip_grad_norm_(
+                        self.model.parameters(), self.clip
+                    )
+                self.optimizer.step()
+                self.optimizer.zero_grad()
 
             acc_loss += torch.sum(recon_loss).item()
             acc_kl_theta_loss += torch.sum(kld_theta).item()
@@ -283,6 +289,7 @@ class ETM(object):
                 cur_loss = round(acc_loss / cnt, 2)
                 cur_kl_theta = round(acc_kl_theta_loss / cnt, 2)
                 cur_real_loss = round(cur_loss + cur_kl_theta, 2)
+                print(f"Epoch {epoch}, Step {idx}, Rec Loss: {cur_loss}, KL Loss: {cur_kl_theta}, Total Loss: {cur_real_loss}")
 
         cur_loss = round(acc_loss / cnt, 2)
         cur_kl_theta = round(acc_kl_theta_loss / cnt, 2)
@@ -290,7 +297,11 @@ class ETM(object):
 
         if self.debug_mode:
             print('Epoch {} - Learning Rate: {} - KL theta: {} - Rec loss: {} - NELBO: {}'.format(
-                epoch, self.optimizer.param_groups[0]['lr'], cur_kl_theta, cur_loss, cur_real_loss))
+                epoch, self.optimizer.param_groups[0]['lr'], cur_kl_theta, cur_loss, cur_real_loss
+            ))
+
+# Ensure that self.accumulation_steps is defined in your __init__ method
+
 
     def _perplexity(self, test_data) -> float:
         """Computes perplexity on document completion for a given testing data.
